@@ -1,0 +1,148 @@
+import pandas as pd
+
+df = pd.read_stata('stat.xlsx')
+print(df.describe())
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+chol=sns.countplot(x='cholesterol',data=df)
+chol.set_xticks([])
+plt.show()
+
+sbp=sns.countplot(x='SBP',data=df)
+sbp.set_xticks([])
+plt.show()
+
+age = sns.countplot(x='age',data=df)
+age.set_xticks([])
+plt.show()  
+import scipy.stats
+import seaborn as sns
+
+drink=df.loc[df['drinking'] == 'Y']
+nodrink=df.loc[df['drinking']=='N']
+
+choldrink=drink['cholesterol']
+cholnodrink=nodrink['cholesterol']
+print(choldrink.mean())
+#print(choldrink.median())
+#print(choldrink.mode())
+print(cholnodrink.mean())
+#print(cholnodrink.median())
+#print(cholnodrink.mode())
+
+scipy.stats.mannwhitneyu(choldrink,cholnodrink,use_continuity=True, alternative='greater')
+
+no=df.loc[df['smoking'] ==1]
+used=df.loc[df['smoking']==2]
+yes=df.loc[df['smoking']==3]
+no=no['cholesterol']
+used=used['cholesterol']
+yes=yes['cholesterol']
+print(yes.mean())
+print(used.mean())
+print(no.mean())
+
+scipy.stats.kruskal(no,used,yes, nan_policy='omit', axis=0, keepdims=False)                    
+
+scipy.stats.mannwhitneyu(choldrink,yes,use_continuity=True, alternative='greater')  
+                                      
+#ageSBP
+from scipy.stats import spearmanr
+import matplotlib.pyplot as plt
+x1=df['age']
+y1=df['SBP']
+plt.scatter(x1, y1)
+plt.show()
+df['age'].corr(df['SBP'], method='spearman')
+print(spearmanr(x1,y1))                                        
+
+#ageSBP
+import numpy as np
+x1 = np.array(x1).reshape((-1, 1))
+y1=np.array(y1).reshape((-1, 1))
+from sklearn.linear_model import LinearRegression
+model = LinearRegression().fit(x1, y1)
+r_sq = model.score(x1, y1)
+intercept=model.intercept_
+slope=model.coef_
+print(f'coefficient of determination: {r_sq}')
+print(f"intercept: {intercept}")
+print(f"slope: {slope}")  
+                                                                              
+import statsmodels.api as sm
+x4 = sm.add_constant(x1)
+model2_= sm.OLS(y1, x4).fit()
+print(model2_.summary())                                          
+
+#cholesterolSBP
+from scipy.stats import spearmanr
+import matplotlib.pyplot as plt
+x2=df['cholesterol']
+y2=df['SBP']
+plt.scatter(x2, y2)
+plt.show()
+df['cholesterol'].corr(df['SBP'], method='spearman')
+print(spearmanr(x2,y2))                                                                                    
+
+#cholesterolSBP
+import numpy as np
+x2 = np.array(x2).reshape((-1, 1))
+y2=np.array(y2).reshape((-1, 1))
+from sklearn.linear_model import LinearRegression
+model2 = LinearRegression().fit(x2, y2)
+r_sq2 = model2.score(x2, y2)
+intercept2=model2.intercept_
+slope2=model2.coef_
+print(f'coefficient of determination: {r_sq2}')
+print(f"intercept: {intercept2}")
+print(f"slope: {slope2}")
+
+x3 = sm.add_constant(x2)
+model2_= sm.OLS(y2, x3).fit()
+print(model2_.summary())
+
+x=df['AST']
+y=df['ALT']
+plt.scatter(x, y)
+plt.show()
+df['ALT'].corr(df['AST'], method='spearman')
+print(spearmanr(x,y))
+
+smoke50=df.loc[(df['smoking']==3) & (df['drinking']=='N')&(df['age']>=50)]
+smoke_ast=smoke50['AST']
+print(smoke_ast.mean())
+
+drink50=df.loc[(df['smoking']==1) & (df['drinking']=='Y')&(df['age']>=50)]
+drink_ast=drink50['AST']
+print(drink_ast.mean())
+scipy.stats.mannwhitneyu(drink_ast,smoke_ast,use_continuity=True, alternative='greater')
+
+smoke50=df.loc[(df['smoking']==3) & (df['drinking']=='N')&(df['age']>=50)]
+smoke_alt=smoke50['ALT']
+print(smoke_alt.mean())
+
+drink50=df.loc[(df['smoking']==1) & (df['drinking']=='Y')&(df['age']>=50)]
+drink_alt=drink50['ALT']
+print(drink_alt.mean())
+scipy.stats.mannwhitneyu(drink_alt,smoke_alt,use_continuity=True, alternative='greater')
+
+smoke2025=df.loc[(df['smoking']==3) & (df['drinking']=='N')&(df['age']<=25)&(df['age']>=20)]
+smoke_ast=smoke2025['AST']
+print(smoke_ast.mean())
+
+drink2025=df.loc[(df['smoking']==1) & (df['drinking']=='Y')&(df['age']<=25)&(df['age']>=20)]
+drink_ast=drink2025['AST']
+print(drink_ast.mean())
+scipy.stats.mannwhitneyu(drink_ast,smoke_ast,use_continuity=True, alternative='two-sided')
+
+smoke2025=df.loc[(df['smoking']==3) & (df['drinking']=='N')&(df['age']<=25)&(df['age']>=20)]
+smoke_alt=smoke2025['ALT']
+print(smoke_alt.mean())
+
+drink2025=df.loc[(df['smoking']==1) & (df['drinking']=='Y')&(df['age']<=25)&(df['age']>=20)]
+drink_alt=drink2025['ALT']
+print(drink_alt.mean())
+scipy.stats.mannwhitneyu(drink_alt,smoke_alt,use_continuity=True, alternative='two-sided')
+
+scipy.stats.mannwhitneyu(drink_alt,smoke_alt,use_continuity=True, alternative='greater')
